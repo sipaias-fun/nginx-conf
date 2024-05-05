@@ -1,0 +1,27 @@
+version: "3"
+services:
+  sipaias_web:
+    build:
+      context: ../sipaias-web/
+      dockerfile: Dockerfile
+    image: sipaias_web
+    container_name: sipaias_web
+    restart: unless-stopped
+    networks:
+      - app-network
+  webserver:
+    image: nginx:latest
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./config:/etc/nginx/conf.d
+    depends_on:
+      - sipaias_web
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
