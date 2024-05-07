@@ -1,22 +1,15 @@
 version: "3"
 services:
   sipaias_web:
-    build:
-      context: ../sipaias-web/
-      dockerfile: Dockerfile
-    image: sipaias_web
     container_name: sipaias_web
-    restart: unless-stopped
+    image: ghcr.io/andreaszico/sipaias-fun:latest
     networks:
       - app-network
   webserver:
-    image: nginx:latest
     container_name: webserver
-    restart: unless-stopped
+    image: ghcr.io/andreaszico/nginx-sipaias:latest
     ports:
-      - "8000:80"
-    volumes:
-      - ./config:/etc/nginx/conf.d
+      - 80:80
     depends_on:
       - sipaias_web
     networks:
