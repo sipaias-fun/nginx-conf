@@ -1,0 +1,4 @@
+laravel/
+server/
+docker/db/data
+docker/redis/data

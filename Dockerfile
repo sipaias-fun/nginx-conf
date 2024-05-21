@@ -1,8 +1,16 @@
 FROM nginx:latest
 
 # Copy custom NGINX configuration
-COPY config /etc/nginx/conf.d
-RUN rm /etc/nginx/conf.d/default.conf
+COPY ./laravel/ /var/www
+
+# Copy nginx configuration files into the container
+COPY ./config/default.conf /etc/nginx/conf.d/default.conf
+COPY ./config/nginx.conf /etc/nginx/nginx.conf
+
+# Define volumes
+VOLUME /var/www
+VOLUME /etc/nginx/conf.d
+VOLUME /etc/nginx/nginx.conf
 
 # Copy custom entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

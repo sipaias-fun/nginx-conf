@@ -5,13 +5,80 @@ services:
     image: ghcr.io/andreaszico/sipaias-fun:latest
     networks:
       - app-network
+
+  express:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: example_express
+    container_name: example_express
+    restart: unless-stopped
+    networks:
+      - app-network
+
   webserver:
+    image: nginx:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     container_name: webserver
-    image: ghcr.io/andreaszico/nginx-sipaias:latest
+    restart: unless-stopped
+    volumes:
+      - ./laravel/:/var/www
+      - ./config/default.conf:/etc/nginx/conf.d/default.conf
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - 80:80
+      - "80:80"
+    command: sh -c "chmod -R 777 /var/www/storage && nginx -g 'daemon off;'"
     depends_on:
+      - db
+      - php
+      - express
       - sipaias_web
+    networks:
+      - app-network
+
+  php:
+    build: ./docker/php
+    ports:
+      - 5173:9000
+    volumes:
+      - ./laravel/:/var/www:cached
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.1
+    ports:
+      - 3307:3306
+    volumes:
+      - ./docker/db/data:/var/lib/mysql
+      - ./docker/logs:/var/log/mysql
+      - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./docker/db/sql:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: refactorian
+      MYSQL_USER: refactorian
+      MYSQL_PASSWORD: refactorian
+    networks:
+      - app-network
+
+  mail:
+    image: axllent/mailpit:latest
+    ports:
+      - 8025:8025
+      - 1025:1025
+    networks:
+      - app-network
+
+  redis:
+    image: redis:latest
+    command: redis-server --appendonly yes
+    volumes:
+      - ./docker/redis/data:/data
+    ports:
+      - 6380:6379
     networks:
       - app-network
 

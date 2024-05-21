@@ -9,11 +9,11 @@ export CR_PAT=secret_key_from_github
 ```
 
 ```
-echo $CR_PAT | docker login ghcr.io -u <username> --password-stdin
+echo $CR_PAT | docker login ghcr.io -u andreaszico --password-stdin
 ```
 
 ```
-docker build . -t ghcr.io/<username>/<image-name>:latest && docker push ghcr.io/<username>/<image-name>:latest
+docker build . -t ghcr.io/andreaszico/sipaias-fun:latest && docker push ghcr.io/andreaszico/sipaias-fun:latest
 ```
 
 ```
